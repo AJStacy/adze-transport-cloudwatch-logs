@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "target": "es5",
+    "moduleResolution": "node",
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "strict": true,
+    "outDir": "dist",
+    "lib": ["DOM", "ES2015"],
+    "declaration": true,
+    "preserveConstEnums": true
+  }
+}

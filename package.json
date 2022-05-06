@@ -1,0 +1,65 @@
+{
+  "name": "adze-transport-cloudwatch-logs",
+  "version": "0.1.0",
+  "description": "Add-on for transporting logs to AWS Cloudwatch Logs.",
+  "main": "dist/index.js",
+  "author": "Andrew Stacy <ajstacy@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/AJStacy/adze-transport-cloudwatch-logs/issues"
+  },
+  "homepage": "https://github.com/AJStacy/adze-transport-cloudwatch-logs#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AJStacy/adze-transport-cloudwatch-logs.git"
+  },
+  "keywords": [
+    "cloudwatch",
+    "aws",
+    "logs",
+    "transport",
+    "adze"
+  ],
+  "scripts": {
+    "prebuild": "npm run clean",
+    "build": "tsc --project tsconfig.prod.json",
+    "clean": "rm -rf ./dist",
+    "commit": "cz",
+    "prepack": "npm run build",
+    "demo": "ts-node ./demo.ts",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "ava",
+    "watch": "tsc --watch",
+    "semantic-release": "semantic-release"
+  },
+  "devDependencies": {
+    "@types/lodash.clonedeep": "^4.5.6",
+    "@types/lodash.defaultsdeep": "^4.6.6",
+    "@types/node": "^12.7.5",
+    "@ava/typescript": "^1.1.1",
+    "@typescript-eslint/eslint-plugin": "^4.14.0",
+    "@typescript-eslint/parser": "^4.14.0",
+    "ava": "^3.15.0",
+    "commitizen": "^4.2.3",
+    "cz-conventional-changelog": "^3.2.0",
+    "eslint": "^7.18.0",
+    "eslint-config-prettier": "^7.2.0",
+    "eslint-plugin-prettier": "^3.3.1",
+    "http-server": "^0.11.1",
+    "husky": "^6.0.0",
+    "lint-staged": "^10.5.4",
+    "prettier": "2.2.1",
+    "semantic-release": "^17.4.2",
+    "ts-node": "^9.1.1",
+    "typescript": "^4.1.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.ts": "eslint --cache --cache-location .eslint_cache --fix"
+  }
+}
