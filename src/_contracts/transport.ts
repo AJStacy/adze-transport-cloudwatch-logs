@@ -7,6 +7,7 @@ import type { InputLogEvent } from '.';
  * @param batchSize The maximum amount of bytes to be sent in a single batch. Default is 1000000.
  * @param transportHiddenLogs Should we send logs to CloudWatch that did not print to the console? Default is false.
  * @param rate The rate at which to send commands to CloudWatch Logs.
+ * @param localStorageLocation The filepath where local storage data will be written in node environments.
  */
 export interface ConfigurationDefaults {
   batchSize: number;

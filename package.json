@@ -69,7 +69,6 @@
     "adze": "^1.9.0"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "^3.85.0",
-    "node-localstorage": "^2.2.1"
+    "@aws-sdk/client-cloudwatch-logs": "^3.85.0"
   }
 }
