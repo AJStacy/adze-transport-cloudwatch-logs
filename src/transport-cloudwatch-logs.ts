@@ -105,15 +105,19 @@ export class TransportCloudwatchLogs {
   /**
    * Kicks off an interval configured to the time provided in the user
    * configuration for the `rate` property. Each interval will attempt to
-   * create a
+   * create a PutLogEvents Command and send it to AWS.
    */
-  private async processCommandQueue() {
+  private async processCommandQueue(retries = 0) {
     try {
       delay(async () => {
         this.sendNextCommand();
       }, this.config.rate);
     } catch (e) {
       log().error('An error occurred while processing a command at the interval.', e);
+      if (retries < this.config.retries) {
+        log().debug(`Retry attempt #${retries}...`);
+        await this.processCommandQueue(retries++);
+      }
     }
   }
 
@@ -125,32 +129,28 @@ export class TransportCloudwatchLogs {
    * for the next request.
    */
   private async sendNextCommand() {
-    try {
-      // Make sure we have a command to send
-      if (this.commandQueue.length > 0) {
-        // The data for the command to be created.
-        const data = this.commandQueue[0];
+    // Make sure we have a command to send
+    if (this.commandQueue.length > 0) {
+      // The data for the command to be created.
+      const data = this.commandQueue[0];
 
-        const mapKey = `${data.logGroupName}_${data.logStreamName}`;
-        // Check if we have the latest sequence token
-        if (this.sequenceToken.has(mapKey)) {
-          this.sequenceToken.set(
-            mapKey,
-            await this.getLatestSequenceToken(data.logGroupName, data.logStreamName)
-          );
-        }
-        const command = new PutLogEventsCommand({
-          ...this.commandQueue[0],
-          sequenceToken: this.sequenceToken.get(mapKey) ?? undefined,
-        });
-        const res = await this.cloudwatch.send(command);
-        if (res.nextSequenceToken) {
-          this.sequenceToken.set(mapKey, res.nextSequenceToken);
-        }
-        this.commandQueue.shift();
+      const mapKey = `${data.logGroupName}_${data.logStreamName}`;
+      // Check if we have the latest sequence token
+      if (this.sequenceToken.has(mapKey)) {
+        this.sequenceToken.set(
+          mapKey,
+          await this.getLatestSequenceToken(data.logGroupName, data.logStreamName)
+        );
       }
-    } catch (e) {
-      log().error('Failed to send a batch of logs.', e);
+      const command = new PutLogEventsCommand({
+        ...this.commandQueue[0],
+        sequenceToken: this.sequenceToken.get(mapKey) ?? undefined,
+      });
+      const res = await this.cloudwatch.send(command);
+      if (res.nextSequenceToken) {
+        this.sequenceToken.set(mapKey, res.nextSequenceToken);
+      }
+      this.commandQueue.shift();
     }
   }
 

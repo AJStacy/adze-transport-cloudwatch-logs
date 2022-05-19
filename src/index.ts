@@ -5,7 +5,7 @@ import {
   InputLogEvent,
 } from '@aws-sdk/client-cloudwatch-logs';
 import { region, accessKeyId, secretAccessKey } from '../keys';
-import { TransportCloudwatchLogs } from './TransportCloudwatchLogs';
+import { TransportCloudwatchLogs } from './transport-cloudwatch-logs';
 
 // 5 requests per second per log stream
 const MAX_BATCH_SIZE = 1000000; // bytes

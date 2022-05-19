@@ -12,6 +12,7 @@ export interface ConfigurationDefaults {
   batchSize: number;
   transportHiddenLogs: boolean;
   rate: number;
+  retries: number;
 }
 
 export interface Configuration extends Partial<ConfigurationDefaults> { }
