@@ -1,3 +1,3 @@
-import type { ListenerCallback } from 'adze';
+import type { ListenerCallback, LogData, FinalLogData, LogRender } from 'adze';
 
-export { ListenerCallback };
+export { ListenerCallback, LogData, FinalLogData, LogRender };

@@ -3,7 +3,8 @@ import {
   PutLogEventsCommand,
   DescribeLogStreamsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
-import { delay, log } from './util';
+import { isFinalLogData } from 'adze';
+import { delay, log, createLogEvent, getObjectBytes } from './util';
 import { DEFAULTS } from './constants';
 import type {
   Configuration,
@@ -13,6 +14,7 @@ import type {
   CloudWatchLogsClientConfig,
   InputLogEvent,
   ListenerCallback,
+  LogRender,
 } from './_contracts';
 
 // If a command fails, cache it to localStorage for later retry.
@@ -69,37 +71,36 @@ export class TransportCloudwatchLogs {
     const logEvents: InputLogEvent[] = [];
     let batchSize = 0;
     return (data, render, printed) => {
-      // Check if a render was generated
-      if (render) {
-        // If transportHiddenLogs is enabled ignore printed, otherwise we should check printed
-        if (this.config.transportHiddenLogs === true || printed) {
-          // Validate that a timestamp and args exist on the log data
-          if (data.timestamp?.unixMilli && data.args) {
-            const message: string = data.args.join('');
-            const log: InputLogEvent = {
-              timestamp: data.timestamp.unixMilli,
-              message,
-            };
+      // Validate that this log can be streamed and that the data is finalized.
+      if (this.canStream(render, printed) && isFinalLogData(data)) {
+        const logEvent = createLogEvent(data);
 
-            // Get the size of the log message in bytes
-            const messageSize = new Blob([message]).size;
+        // Get the size of the log message in bytes
+        const eventSize = getObjectBytes(logEvent);
 
-            // Check if the current batchSize plus the messageSize is less than the allowed batchSize
-            if (batchSize + messageSize < this.config.batchSize) {
-              batchSize += messageSize;
-              logEvents.push(log);
-            } else {
-              // Else create a command and add it to the command queue
-              this.commandQueue.push({
-                logEvents,
-                logGroupName,
-                logStreamName,
-              });
-            }
-          }
+        // Check if the current batchSize plus the messageSize is less than the allowed batchSize
+        if (batchSize + eventSize < this.config.batchSize) {
+          batchSize += eventSize;
+          logEvents.push(logEvent);
+        } else {
+          // Else create a command and add it to the command queue
+          this.commandQueue.push({
+            logEvents,
+            logGroupName,
+            logStreamName,
+          });
         }
       }
     };
+  }
+
+  /**
+   * Validate that a log is allowed to be streamed to CloudWatch by checking if
+   * it has a log render and transportHiddenLogs is enabled or the log was printed
+   * if it isn't.
+   */
+  private canStream(render: LogRender | null, printed: boolean): boolean {
+    return render !== null && (this.config.transportHiddenLogs === true || printed);
   }
 
   /**
@@ -151,6 +152,9 @@ export class TransportCloudwatchLogs {
       }
     } catch (e) {
       log().error('Failed to send a batch of logs.', e);
+      if (e.message === 'Failed to fetch')
+      // Add to the command cache
+      // Retry for IntervalServiceFault, InvalidNextToken, "Failed to fetch"
     }
   }
 
