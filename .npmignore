@@ -1,0 +1,14 @@
+src/
+test/
+.browserslistrc
+.eslintrc.json
+.gitignore
+.nvmrc
+.prettierignore
+.prettierrc.yaml
+ava.config.json
+babel.config.js
+LICENSE.md
+tsconfig.dev.json
+tsconfig.json
+tsconfig.prod.json
