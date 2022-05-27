@@ -1,4 +1,7 @@
 {
   "extends": "./tsconfig",
-  "include": ["src/**/*.ts", "test/**/*.ts", "keys.ts"]
+  "compilerOptions": {
+    "outDir": "./demo"
+  },
+  "include": ["src/**/*.ts", "test/**/*.ts", "keys.ts", "demo.ts"]
 }

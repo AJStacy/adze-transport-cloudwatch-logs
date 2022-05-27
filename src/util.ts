@@ -13,17 +13,25 @@ export function delay<T>(cb: () => Promise<any>, ms: number): Promise<T> {
  * Validates that the log data is valid and builds a command data object from it.
  */
 export function createLogEvent(data: FinalLogData<any>): InputLogEvent {
+  const args = data.args.map((arg) => JSON.stringify(arg));
   return {
     timestamp: data.timestamp.unixMilli,
-    message: data.args.join(''),
+    message: args.join(' '),
   };
 }
 
 /**
  * Returns the size of an object in bytes.
  */
-export function getObjectBytes(obj: Record<string, unknown>): number {
-  return new Blob([JSON.stringify(obj)]).size;
+export function getBytes(str: string): number {
+  if (typeof window !== 'undefined') {
+    return new window.Blob([str]).size;
+  }
+  return Buffer.from(str).length;
+}
+
+export function mapKey(groupName: string, streamName: string): string {
+  return `${groupName}_${streamName}`;
 }
 
 export const log = adze().ns('adze-transport-cloudwatch-logs').seal();

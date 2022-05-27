@@ -8,10 +8,7 @@
     "plugin:prettier/recommended"
   ],
   "ignorePatterns": [
-    "webpack.config.js",
     "types/**/*.d.ts",
-    "demo.ts",
-    "demo_funcs.js",
     "ava.config.js",
     "dist/*"
   ],
@@ -22,6 +19,7 @@
   },
   "plugins": ["@typescript-eslint"],
   "rules": {
+    "@typescript-eslint/no-empty-function": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": [
       "error",

@@ -2,14 +2,17 @@
   "compilerOptions": {
     "target": "es5",
     "moduleResolution": "node",
-    "module": "commonjs",
+    "module": "CommonJS",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
     "strict": true,
     "outDir": "dist",
-    "lib": ["DOM", "ES2015"],
+    "lib": ["DOM"],
     "declaration": true,
-    "preserveConstEnums": true
+    "emitDeclarationOnly": true,
+    "isolatedModules": true,
+    "preserveConstEnums": true,
+    "skipLibCheck": true,
   }
 }

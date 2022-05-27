@@ -1,4 +1,4 @@
-import type { InputLogEvent } from '.';
+import type { InputLogEvent, PutLogEventsCommandOutput } from '.';
 
 /**
  * Configuration for handling transportation of your application
@@ -9,19 +9,27 @@ import type { InputLogEvent } from '.';
  * @param rate The rate at which to send commands to CloudWatch Logs.
  * @param localStorageLocation The filepath where local storage data will be written in node environments.
  */
-export interface ConfigurationDefaults {
+export interface Configuration {
   batchSize: number;
   transportHiddenLogs: boolean;
   rate: number;
   retries: number;
 }
 
-export interface Configuration extends Partial<ConfigurationDefaults> { }
+/**
+ * Callback when a command has been successfully sent.
+ */
+export type SuccessCallback = (data: CommandData, response: PutLogEventsCommandOutput) => void;
+
+/**
+ * Callback when a command has failed to send.
+ */
+export type FailureCallback = (data: CommandData, error: unknown) => void;
 
 export interface CommandData {
   logEvents: InputLogEvent[];
   logGroupName: string;
   logStreamName: string;
+  successCb: SuccessCallback;
+  failureCb: FailureCallback;
 }
-
-export interface SequenceTokenMap extends Map<string, string | null> { }
