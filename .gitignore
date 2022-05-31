@@ -1,6 +1,7 @@
 # Custom
 **/keys.ts
 demo/
+.eslint_cache
 
 # Logs
 logs
