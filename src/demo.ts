@@ -1,28 +1,56 @@
+/**********************************************************\
+ * This file is strictly used for testing and demonstrating
+ * the add-on's API and features. This is not a part of the
+ * source code of the add-on. To use this demo, you must
+ * create a keys.ts file inside of your `src` folder that
+ * contains the aws region ID, the access key, and the
+ * secret key.
+ * 
+ * To execute this use `npm run demo`.
+\**********************************************************/
 import adze, { createShed } from 'adze';
 import TransportCloudwatchLogs from '.';
 import { region, accessKeyId, secretAccessKey } from './keys';
 
-const client = new TransportCloudwatchLogs({
-  region,
-  credentials: { accessKeyId, secretAccessKey },
-});
+const client = new TransportCloudwatchLogs(
+  {
+    region,
+    credentials: { accessKeyId, secretAccessKey },
+  },
+  { createLogGroup: true, createLogStream: true }
+);
 
 const shed = createShed();
 
 shed.addListener(
   [0, 1],
-  client.stream(
-    'web-application',
-    'errors',
-    (data, error) => {
+  client.stream('web-application', 'errors', {
+    failureCb: (data, error) => {
       adze().fail('DATA', data);
       adze().error(error);
     },
-    (data, response) => {
+    successCb: (data, response) => {
       adze().success('DATA', data);
       adze().success('RESPONSE', response);
-    }
-  )
+    },
+  })
+);
+
+shed.addListener(
+  [0, 1],
+  client.stream('web-application', 'new-errors', {
+    failureCb: (data, error) => {
+      adze().fail('DATA', data);
+      adze().error(error);
+    },
+    successCb: (data, response) => {
+      adze().success('DATA', data);
+      adze().success('RESPONSE', response);
+    },
+    groupTags: {
+      foo: 'bar',
+    },
+  })
 );
 
 const logger = adze().seal();

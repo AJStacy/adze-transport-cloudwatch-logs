@@ -2,20 +2,21 @@
 import {
   CloudWatchLogs,
   PutLogEventsCommand,
+  CreateLogGroupCommand,
+  CreateLogStreamCommand,
   DescribeLogStreamsCommand,
 } from '@aws-sdk/client-cloudwatch-logs';
 import adze, { isFinalLogData } from 'adze';
 import { delay, log, createLogEvent, getBytes, mapKey } from './util';
-import { SequenceTokenError } from './errors';
-import { DEFAULTS } from './constants';
+import { isResourceAlreadyExistsException } from './type-guards';
+import { DEFAULTS, STREAM_OPTIONS_DEFAULTS } from './constants';
 import type {
   Configuration,
   CommandData,
   CloudWatchLogsClientConfig,
   InputLogEvent,
   ListenerCallback,
-  SuccessCallback,
-  FailureCallback,
+  StreamOptions,
 } from './_contracts';
 
 export class TransportCloudwatchLogs {
@@ -69,9 +70,9 @@ export class TransportCloudwatchLogs {
   public stream(
     logGroupName: string,
     logStreamName: string,
-    failureCb: FailureCallback = () => { },
-    successCb: SuccessCallback = () => { }
+    _streamOptions: Partial<StreamOptions>,
   ): ListenerCallback {
+    const streamOptions = { ..._streamOptions, ...STREAM_OPTIONS_DEFAULTS };
     const logEvents: InputLogEvent[] = [];
     let batchSize = 0;
     return (data, render, printed) => {
@@ -94,8 +95,7 @@ export class TransportCloudwatchLogs {
             logEvents,
             logGroupName,
             logStreamName,
-            failureCb,
-            successCb,
+            streamOptions,
           });
         }
       }
@@ -123,20 +123,23 @@ export class TransportCloudwatchLogs {
     delay(async () => {
       const data = this.latestCommand;
       try {
-        adze().debug('Interval firing!', data);
         if (data) {
-          adze().debug('Attempting to send a command.', data);
-          this.sendCommand(data);
+          if (this.config.createLogGroup) {
+            await this.createLogGroup(data.logGroupName, data.streamOptions.groupTags);
+          }
+          if (this.config.createLogStream) {
+            await this.createLogStream(data.logGroupName, data.logStreamName);
+          }
+          this.sendLogEvents(data);
         }
-      } catch (e) {
+      } catch (e: unknown) {
         log().error('An error occurred while processing a command at the interval.', e);
         // Add to the command cache
         // Retry for IntervalServiceFault, InvalidNextToken, "Failed to fetch"
         if (retries < this.config.retries) {
-          log().debug(`Retry attempt #${retries}...`);
           await this.processCommandQueue(retries++);
         } else {
-          data?.failureCb(data, e);
+          data?.streamOptions?.failureCb(data, e);
         }
       }
     }, this.config.rate);
@@ -149,13 +152,15 @@ export class TransportCloudwatchLogs {
    * private CloudWatchLogs client instance. It then tries to update the sequence token
    * for the next request.
    */
-  private async sendCommand(data: CommandData) {
-    const { logGroupName, logStreamName } = data;
+  private async sendLogEvents(data: CommandData) {
+    const { logGroupName, logStreamName, logEvents } = data;
     const key = mapKey(logGroupName, logStreamName);
     const sequenceToken = await this.getSequenceToken(key, logGroupName, logStreamName);
 
     const command = new PutLogEventsCommand({
-      ...data,
+      logEvents,
+      logGroupName,
+      logStreamName,
       sequenceToken,
     });
     const res = await this.cloudwatch.send(command);
@@ -167,7 +172,7 @@ export class TransportCloudwatchLogs {
     this.commandQueue.shift();
 
     // Fire the success callback
-    data.successCb(data, res);
+    data.streamOptions.successCb(data, res);
   }
 
   /**
@@ -191,10 +196,6 @@ export class TransportCloudwatchLogs {
     if (newToken) {
       this.sequenceToken.set(key, newToken);
       return newToken;
-    } else {
-      throw new SequenceTokenError(
-        'Failed to get the next sequence token for the log event command.'
-      );
     }
   }
 
@@ -214,16 +215,13 @@ export class TransportCloudwatchLogs {
     logStreamName: string
   ): Promise<string | null> {
     const logStreamNamePrefix = logStreamName;
-    adze().debug('logStreamNamePrefix', logStreamNamePrefix);
     const command = new DescribeLogStreamsCommand({ logGroupName, logStreamNamePrefix });
     const response = await this.cloudwatch.send(command);
-    adze().debug('CloudWatch response', response.logStreams);
     if (response.logStreams) {
       // Search the returned log streams for the log
       const discoveredStream = response.logStreams.find(
         (stream) => stream.logStreamName === logStreamNamePrefix
       );
-      adze().success('Found the log stream!', discoveredStream);
 
       if (discoveredStream?.uploadSequenceToken) {
         return discoveredStream.uploadSequenceToken;
@@ -233,5 +231,45 @@ export class TransportCloudwatchLogs {
       'Failed to get the latest sequence token for the provided stream name. Check that the group name and stream name provided are spelled correctly.'
     );
     return null;
+  }
+
+  /**
+   * Creates a new log group with the provided name.
+   */
+  private async createLogGroup(
+    logGroupName: string,
+    tags?: Record<string, string>
+  ): Promise<void> {
+    try {
+      const command = new CreateLogGroupCommand({
+        logGroupName,
+        tags,
+      });
+      await this.cloudwatch.send(command);
+    } catch (e: unknown) {
+      // If the thrown exception is a ResourceAlreadyExistsException, we should ignore it.
+      if (isResourceAlreadyExistsException(e)) return;
+      throw e;
+    }
+  }
+
+  /**
+   * Creates a new log stream with the provided name.
+   */
+  private async createLogStream(
+    logGroupName: string,
+    logStreamName: string,
+  ): Promise<void> {
+    try {
+      const command = new CreateLogStreamCommand({
+        logGroupName,
+        logStreamName,
+      });
+      await this.cloudwatch.send(command);
+    } catch (e: unknown) {
+      // If the thrown exception is a ResourceAlreadyExistsException, we should ignore it.
+      if (isResourceAlreadyExistsException(e)) return;
+      throw e;
+    }
   }
 }
