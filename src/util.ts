@@ -1,10 +1,13 @@
 import adze from 'adze';
 import { FinalLogData, InputLogEvent } from './_contracts';
 
-export function delay<T>(cb: () => Promise<any>, ms: number): Promise<T> {
-  return new Promise((resolve, reject) => {
-    setInterval(() => {
-      cb().then(resolve).catch(reject);
+/**
+ * Pauses execution for a specified period of time in milliseconds.
+ */
+export async function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve();
     }, ms);
   });
 }
@@ -30,8 +33,11 @@ export function getBytes(str: string): number {
   return Buffer.from(str).length;
 }
 
-export function mapKey(groupName: string, streamName: string): string {
-  return `${groupName}_${streamName}`;
+/**
+ * Function for generating a map key from a log group name and log stream name.
+ */
+export function mapKey(logGroupName: string, logStreamName: string): string {
+  return `${logGroupName}_${logStreamName}`;
 }
 
 export const log = adze().ns('adze-transport-cloudwatch-logs').seal();

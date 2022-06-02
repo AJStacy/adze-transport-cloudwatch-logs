@@ -1,10 +1,12 @@
 import {
+  DataAlreadyAcceptedException,
   ResourceAlreadyExistsException,
   InvalidSequenceTokenException,
+  CloudWatchLogsServiceException,
 } from '@aws-sdk/client-cloudwatch-logs';
 
-export function isError(e: unknown): e is Error {
-  return e instanceof Error;
+export function isDataAlreadyAcceptedException(e: unknown): e is DataAlreadyAcceptedException {
+  return e instanceof DataAlreadyAcceptedException;
 }
 
 export function isInvalidSequenceTokenException(e: unknown): e is InvalidSequenceTokenException {
@@ -13,4 +15,8 @@ export function isInvalidSequenceTokenException(e: unknown): e is InvalidSequenc
 
 export function isResourceAlreadyExistsException(e: unknown): e is ResourceAlreadyExistsException {
   return e instanceof ResourceAlreadyExistsException;
+}
+
+export function isCloudWatchLogsServiceException(e: unknown): e is CloudWatchLogsServiceException {
+  return e instanceof CloudWatchLogsServiceException;
 }

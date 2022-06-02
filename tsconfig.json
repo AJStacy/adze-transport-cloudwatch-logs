@@ -13,6 +13,7 @@
     "emitDeclarationOnly": true,
     "isolatedModules": true,
     "preserveConstEnums": true,
+    "downlevelIteration": true,
     "skipLibCheck": true,
   }
 }
