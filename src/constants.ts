@@ -6,7 +6,7 @@ export const CACHE_PREFIX = 'adze-transport-cloudwatch-logs';
 export const DEFAULTS: Configuration = Object.freeze({
   batchSize: 10000,
   transportHiddenLogs: false,
-  rate: 5000,
+  rate: 1000,
   retries: 3,
   createLogGroup: false,
   createLogStream: false,

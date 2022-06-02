@@ -23,7 +23,7 @@ const client = new TransportCloudwatchLogs(
 const shed = createShed();
 
 shed.addListener(
-  [0, 1],
+  [1],
   client.stream('web-application', 'errors', {
     failureCb: (data, error) => {
       adze().fail('DATA', data);
@@ -37,7 +37,21 @@ shed.addListener(
 );
 
 shed.addListener(
-  [0, 1],
+  [2],
+  client.stream('web-application', 'errors', {
+    failureCb: (data, error) => {
+      adze().fail('DATA', data);
+      adze().error(error);
+    },
+    successCb: (data, response) => {
+      adze().success('DATA', data);
+      adze().success('RESPONSE', response);
+    },
+  })
+);
+
+shed.addListener(
+  [0],
   client.stream('web-application', 'new-errors', {
     failureCb: (data, error) => {
       adze().fail('DATA', data);
@@ -53,9 +67,13 @@ shed.addListener(
   })
 );
 
+// Start processing commands
+client.processCommands();
+
 const logger = adze().seal();
 
 for (let i = 0; i < 500; i++) {
   logger().error('Foo bar!', { x: 'foo', y: 'bar' }, [1, 2, 3]);
-  logger().silent.error('This error is silent.');
+  logger().warn('WARNING!', 1234);
+  logger().alert('This error is silent.');
 }
