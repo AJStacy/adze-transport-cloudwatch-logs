@@ -9,7 +9,9 @@ For API Documentation for CloudWatch Logs, please visit [https://docs.aws.amazon
 ## Minimum Requirements
 
 **browser** - ES6 Support Recommended
+
 **node** - `12.x`, `14.x` (recommended minimum), `16.x`, and `18.x`.
+
 **adze** - `v1.9.0` recommended (peer dependency)
 
 ## Install
