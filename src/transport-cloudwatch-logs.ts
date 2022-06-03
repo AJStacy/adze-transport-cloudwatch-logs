@@ -11,7 +11,7 @@ import type {
 import { CommandQueue } from './command-queue';
 import { GroupStream } from './group-stream';
 
-export class TransportCloudwatchLogs {
+export class TransportCloudWatchLogs {
   /**
    * The private instance of CloudWatchLogs that is generated on construct.
    */
@@ -142,7 +142,6 @@ export class TransportCloudwatchLogs {
       groupStream,
       this.config.batchSize,
       this.config.rate,
-      this.config.commandsPerTick,
       this.config.retries,
       streamOptions
     );

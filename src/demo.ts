@@ -25,11 +25,11 @@ const shed = createShed();
 shed.addListener(
   [1],
   client.stream('web-application', 'errors', {
-    failureCb: (data, error) => {
+    failure: (data, error) => {
       adze().fail('DATA', data);
       adze().error(error);
     },
-    successCb: (data, response) => {
+    success: (data, response) => {
       adze().success('DATA', data);
       adze().success('RESPONSE', response);
     },
@@ -39,11 +39,11 @@ shed.addListener(
 shed.addListener(
   [2],
   client.stream('web-application', 'errors', {
-    failureCb: (data, error) => {
+    failure: (data, error) => {
       adze().fail('DATA', data);
       adze().error(error);
     },
-    successCb: (data, response) => {
+    success: (data, response) => {
       adze().success('DATA', data);
       adze().success('RESPONSE', response);
     },
@@ -53,11 +53,11 @@ shed.addListener(
 shed.addListener(
   [0],
   client.stream('web-application', 'new-errors', {
-    failureCb: (data, error) => {
+    failure: (data, error) => {
       adze().fail('DATA', data);
       adze().error(error);
     },
-    successCb: (data, response) => {
+    success: (data, response) => {
       adze().success('DATA', data);
       adze().success('RESPONSE', response);
     },

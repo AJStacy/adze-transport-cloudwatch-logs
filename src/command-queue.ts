@@ -66,7 +66,6 @@ export class CommandQueue {
     groupStream: GroupStream,
     maxBatchSize: number,
     rate: number,
-    commandsPerTick: number,
     retries: number,
     streamOptions: StreamOptions
   ) {
@@ -182,7 +181,7 @@ export class CommandQueue {
           await delay(this.rate * retries);
           await this.processCommand(data, retries);
         } else {
-          data.streamOptions.failureCb(data, e);
+          data.streamOptions.failure(data, e);
         }
       } else {
         log().error('An error occurred while processing a command: ', e);
@@ -211,6 +210,6 @@ export class CommandQueue {
     this.sequenceToken.set(res.nextSequenceToken);
 
     // Fire the success callback
-    data.streamOptions.successCb(data, res);
+    data.streamOptions.success(data, res);
   }
 }
