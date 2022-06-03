@@ -6,6 +6,12 @@ This library is an add-on for transporting logs to AWS Cloudwatch Logs via [Adze
 
 For API Documentation for CloudWatch Logs, please visit [https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudwatch-logs/index.html](https://docs.aws.amazon.com/AWSJavaScriptSDK/v3/latest/clients/client-cloudwatch-logs/index.html).
 
+## Minimum Requirements
+
+**browser** - ES6 Support Recommended
+**node** - `12.x`, `14.x` (recommended minimum), `16.x`, and `18.x`.
+**adze** - `v1.9.0` recommended (peer dependency)
+
 ## Install
 
 ```bash
