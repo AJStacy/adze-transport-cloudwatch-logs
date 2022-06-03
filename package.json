@@ -31,7 +31,6 @@
     "peers": "peerdeps",
     "prepack": "npm run build",
     "prepare": "husky install",
-    "postinstall": "peerdeps",
     "semantic-release": "semantic-release",
     "test": "ava",
     "watch": "tsc --watch"
