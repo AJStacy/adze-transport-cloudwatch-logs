@@ -33,14 +33,14 @@ export type FailureCallback = (data: CommandData, error: unknown) => void;
 /**
  * Options for the specified stream.
  *
- * @param successCb Callback when a command has been successfully sent.
- * @param failureCb Callback when a command has failed to send.
+ * @param success Callback when a command has been successfully sent.
+ * @param failure Callback when a command has failed to send.
  * @param logGroupTags Tags that you would like applied to new log groups.
  * @param logStreamTags Tags that you would like applied to new log streams.
  */
 export interface StreamOptions {
-  successCb: SuccessCallback;
-  failureCb: FailureCallback;
+  success: SuccessCallback;
+  failure: FailureCallback;
   groupTags?: Record<string, string>;
 }
 

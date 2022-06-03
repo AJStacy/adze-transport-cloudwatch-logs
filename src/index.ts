@@ -1,4 +1,4 @@
 export * from './_contracts';
-import { TransportCloudwatchLogs } from './transport-cloudwatch-logs';
+import { TransportCloudWatchLogs } from './transport-cloudwatch-logs';
 
-export default TransportCloudwatchLogs;
+export default TransportCloudWatchLogs;
