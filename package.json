@@ -20,9 +20,11 @@
     "transport",
     "adze"
   ],
+  "types": "./dist/index.d.ts",
   "scripts": {
     "prebuild": "npm run clean",
     "build": "babel src --out-dir dist --copy-files --extensions '.ts,.js' --ignore 'src/demo.ts,src/keys.ts' --no-copy-ignored",
+    "postbuild": "tsc --project tsconfig.prod.json",
     "clean": "rm -rf ./dist",
     "commit": "cz",
     "demo": "babel src --out-dir dist --copy-files --extensions '.ts,.js' && node ./dist/demo.js",

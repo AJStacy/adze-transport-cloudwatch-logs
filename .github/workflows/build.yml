@@ -77,6 +77,8 @@ jobs:
             ${{ runner.os }}-node-
       - name: Install Dependencies
         run: npm install --force
+      - name: Install Peer Dependencies
+        run: npm run peers
       - name: Build
         run: npm run build
       - name: Release

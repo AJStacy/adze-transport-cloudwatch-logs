@@ -14,7 +14,7 @@ export const DEFAULTS: Configuration = Object.freeze({
 
 // Stream configuration defaults.
 export const STREAM_OPTIONS_DEFAULTS: StreamOptions = Object.freeze({
-  failureCb: () => {},
-  successCb: () => {},
+  failure: () => {},
+  success: () => {},
   groupTags: undefined,
 });
