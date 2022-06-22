@@ -1,6 +1,6 @@
 {
   "name": "@adze/transport-cloudwatch-logs",
-  "version": "0.1.0",
+  "version": "1.0.2",
   "description": "Add-on for transporting logs to AWS Cloudwatch Logs.",
   "main": "dist/index.js",
   "author": "Andrew Stacy <ajstacy@gmail.com>",
