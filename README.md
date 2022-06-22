@@ -1,4 +1,4 @@
-# adze-transport-cloudwatch-logs
+# @adze/transport-cloudwatch-logs
 
 > This add-on is in its infancy and may not be completely stable. Please open issues and contribute!
 
@@ -18,13 +18,13 @@ For API Documentation for CloudWatch Logs, please visit [https://docs.aws.amazon
 
 ```bash
 # install with npm
-npm install -S adze-transport-cloudwatch-logs
+npm install -S @adze/transport-cloudwatch-logs
 
 # install with pnpm
-pnpm install -S adze-transport-cloudwatch-logs
+pnpm install -S @adze/transport-cloudwatch-logs
 
 # install with yarn
-yarn add adze-transport-cloudwatch-logs
+yarn add @adze/transport-cloudwatch-logs
 ```
 
 ## Quick Start
@@ -35,7 +35,7 @@ Here is a basic example of setting up a CloudWatch Logs transport that listens f
 
 ```javascript
 import adze, { createShed } from 'adze';
-import TransportCloudWatchLogs from 'adze-transport-cloudwatch-logs';
+import TransportCloudWatchLogs from '@adze/transport-cloudwatch-logs';
 
 // First, create a new instance of the transport and provide it with CloudWatch Logs credentials.
 const client = new TransportCloudWatchLogs(
@@ -165,7 +165,7 @@ This method allows you to set your own instance of the CloudWatch Logs client in
 
 ```javascript
 import adze, { createShed } from 'adze';
-import TransportCloudWatchLogs from 'adze-transport-cloudwatch-logs';
+import TransportCloudWatchLogs from '@adze/transport-cloudwatch-logs';
 import { CloudWatchLogs } from '@aws-sdk/client-cloudwatch-logs';
 
 // Create our CloudWatch Logs configuration.
